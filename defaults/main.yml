@@ -1,0 +1,20 @@
+---
+
+# The executable to run when calling PHP from the command line.
+composer_php_executable: "{{ php_executable | default('php') }}"
+
+# The name of the Composer file.
+composer_file_name: "composer"
+
+# The path of the install folder that will hold the Composer file.
+# This can be relative to "{{ composer_temp_path }}" or absolute.
+composer_install_path: "/usr/local/bin"
+
+# The path of the temp folder that will hold the Composer installer.
+composer_temp_path: "/tmp"
+
+# Whether to keep Composer up to date to the latest stable version.
+composer_keep_updated: false
+
+# The specific version of Composer that will be installed.
+composer_version: ""

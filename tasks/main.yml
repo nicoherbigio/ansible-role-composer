@@ -1,0 +1,39 @@
+---
+
+- name: Set composer_path variable to the path of Composer file.
+  set_fact:
+    composer_path: "{{ composer_install_path }}/{{ composer_file_name }}"
+
+- name: Determine if Composer is already installed.
+  stat:
+    path: "{{ composer_path }}"
+  register: composer_executable
+
+- block:
+
+  - name: Create temp directory if Composer is not already installed.
+    file:
+      path: "{{ composer_temp_path }}"
+      state: "directory"
+
+  - name: Download installer if Composer is not already installed.
+    get_url:
+      url: https://getcomposer.org/installer
+      dest: "{{ composer_temp_path }}/composer-setup.php"
+      mode: 0755
+
+  - name: Create install directory if Composer is not already installed.
+    file:
+      path: "{{ composer_install_path }}"
+      state: "directory"
+
+  - name: Execute installer if Composer is not already installed.
+    command: "{{ composer_php_executable }} {{ composer_temp_path }}/composer-setup.php --install-dir={{ composer_install_path }} --filename={{ composer_file_name }} {% if composer_version != \"\" %}--version={{ composer_version }}{% endif %} --quiet"
+    args:
+      chdir: "{{ composer_temp_path }}"
+
+  when: not composer_executable.stat.exists
+
+- name: Update Composer to latest version if configured.
+  command: "{{ composer_php_executable }} {{ composer_path }} self-update"
+  when: composer_keep_updated
